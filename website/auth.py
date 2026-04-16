@@ -9,3 +9,11 @@ def login():
         password=request.form.get("password")
 
     return render_template("login.html")
+
+@auth.route("signup")
+def signup():
+    pass
+
+@auth.route("logout")
+def logout():
+    pass
