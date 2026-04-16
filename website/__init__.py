@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from os import path
 
 Db=SQLAlchemy()
 DB_NAME="database.db"
@@ -17,3 +18,9 @@ def create_app():
     app.register_blueprint(views, url_prefix="/")
 
     return app
+
+def create_database(app):
+    if not path.exists("website/"+DB_NAME):
+        with app.app_context():
+            Db.create_all()
+        print("Created database!")
