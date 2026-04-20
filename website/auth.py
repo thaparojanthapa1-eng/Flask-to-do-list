@@ -27,6 +27,38 @@ def login():
 
 @auth.route("/signup", methods=["POST", "GET"])
 def signup():
+    if request.method == "POST":
+        username = request.form.get("username")
+        email = request.form.get("email")
+        password1 = request.form.get("password1")
+        password2 = request.form.get("password2")
+
+        email_exist = User.query.filter_by(email=email).first()
+        username_exist = User.query.filter_by(username=username).first()
+
+        if email_exist:
+            flash("Email is already in use.", category="error")
+        elif username_exist:
+            flash("Username already in use.", category="error")
+        elif password1 != password2:
+            flash("Passwords don't match.", category="error")
+        elif len(username) < 2:
+            flash("Username too short.", category="error")
+        elif len(password1) < 2:
+            flash("Password too short.", category="error")
+        elif len(email) < 10:
+            flash("Email too short.", category="error")
+        else:
+            new_user = User(
+                email=email,
+                username=username,
+                password=generate_password_hash(password1, method="pbkdf2:sha256")
+            )
+            Db.session.add(new_user)
+            Db.session.commit()
+            login_user(new_user, remember=True)
+            flash("User created!", category="success")
+            return redirect(url_for("views.home"))
     return render_template("signup.html")
 
 @auth.route("/logout")
